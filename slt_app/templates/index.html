@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Language Translator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex items-center justify-center">
+
+    <div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-xl text-center space-y-6">
+        <h1 class="text-3xl font-bold text-blue-600">🤟  Sign Language Translator</h1>
+
+        <h2>Live Sign Language Detection</h2>
+        <img src="{% url 'video_feed' %}" width="640" height="480">
+
+        <div class="rounded-xl overflow-hidden border border-gray-300">
+            <video id="video" width="100%" height="auto" autoplay playsinline class="rounded"></video>
+        </div>
+
+        <div>
+            <p class="text-lg font-medium">Prediction:</p>
+            <p id="prediction" class="text-4xl font-bold text-green-600 mt-2">None</p>
+        </div>
+
+        <button onclick="getSign()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-xl shadow">
+            Translate Sign
+        </button>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => { video.srcObject = stream; })
+            .catch((error) => { console.error('Webcam Error:', error); });
+
+        function getSign() {
+            fetch('/get-sign/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('prediction').textContent = data.prediction;
+                });
+        }
+
+        setInterval(getSign, 2000);
+    </script>
+</body>
+</html>
